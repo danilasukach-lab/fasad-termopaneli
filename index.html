@@ -1,0 +1,360 @@
+<!doctype html><html lang="ru"><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><meta charset="utf-8">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Фасады с термопанелями</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Раскладка: шапка → панель выбора (вариант, плитка, цоколь) → крупный уличный фасад с отметками и выносками → три остальных фасада → ведомость отделки */
+:root{
+  --bg:#f1f2ef; --surface:#ffffff; --fg:#1e2225; --muted:#5d656a; --line:#d3d7d4;
+  --accent:#8a5a34; --accent-fg:#ffffff; --sky:#e2e8eb; --ground:#b7bbb1; --mark:#ffffff;
+  --font-display:'Unbounded','Manrope',system-ui,sans-serif;
+  --font-body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181a; --surface:#1e2225; --fg:#e7e9ea; --muted:#9aa3a8; --line:#353b3f;
+    --accent:#cf9566; --accent-fg:#1b1207; --sky:#27303a; --ground:#3a403b; --mark:#e7e9ea;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181a; --surface:#1e2225; --fg:#e7e9ea; --muted:#9aa3a8; --line:#353b3f;
+  --accent:#cf9566; --accent-fg:#1b1207; --sky:#27303a; --ground:#3a403b; --mark:#e7e9ea;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.5}
+.page{max-width:1180px;margin:0 auto;padding-block:28px 56px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--font-display);font-weight:600;font-size:clamp(22px,4vw,34px);line-height:1.15;margin:0;text-wrap:balance}
+h2{font-family:var(--font-display);font-weight:500;font-size:16px;margin:0;text-wrap:balance}
+.lead{color:var(--muted);margin:6px 0 0;max-width:65ch}
+.controls{display:flex;flex-wrap:wrap;gap:14px 26px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.group{display:flex;flex-direction:column;gap:6px;min-width:0}
+.group > span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:600 13px var(--font-body);color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:6px;padding:7px 11px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.seg button:hover{border-color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sw{width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.35);flex:none}
+.tip{margin:0;color:var(--muted);font-size:14px;max-width:80ch}
+.tip b{color:var(--fg)}
+figure{margin:0;display:flex;flex-direction:column;gap:10px;min-width:0}
+figcaption{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+figcaption small{color:var(--muted);font-size:13px}
+.scene{border:1px solid var(--line);border-radius:10px;overflow-x:auto;background:var(--sky)}
+.scene svg{display:block;width:100%;height:auto}
+.scene.big svg{min-width:720px}
+.dim{font-family:var(--font-mono);font-size:24px;font-weight:500;fill:var(--fg)}
+.dimline{stroke:var(--fg);stroke-width:2;fill:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;padding:0;list-style:none;font-size:13px}
+.legend li{display:flex;gap:7px;align-items:baseline}
+.legend i{font:500 11px var(--font-mono);font-style:normal;border:1px solid var(--fg);border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:22px}
+.totals{display:flex;flex-wrap:wrap;gap:10px 34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0}
+.totals div{display:flex;flex-direction:column;min-width:0}
+.totals b{font-family:var(--font-display);font-weight:500;font-size:20px;font-variant-numeric:tabular-nums}
+.totals span{color:var(--muted);font-size:13px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:8px 12px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td:first-child{font-family:var(--font-mono);color:var(--muted);width:34px}
+.note{color:var(--muted);font-size:13px;margin:0;max-width:80ch}
+</style>
+
+<div class="page">
+  <header>
+    <h1>Фасады с термопанелями</h1>
+    <p class="lead">Одноэтажный дом 15,3 × 9,05 м, кровля фальцевая RAL 7024. Три варианта отделки клинкерной плиткой Керамин «Колорадо»: акценты на штукатурке, сочетание двух плиток или вся площадь стен. Фасады построены в масштабе по чертежам проекта.</p>
+  </header>
+
+  <section class="controls" aria-label="Выбор отделки">
+    <div class="group"><span>Вариант</span><div class="seg" id="seg-variant"></div></div>
+    <div class="group"><span>Плитка</span><div class="seg" id="seg-tile"></div></div>
+    <div class="group"><span>Цоколь</span><div class="seg" id="seg-plinth"></div></div>
+  </section>
+  <p class="tip" id="tip"></p>
+
+  <figure>
+    <figcaption><h2>Фасад Г–А, со стороны улицы</h2><small>М 1:100, отметки в метрах, размер в миллиметрах</small></figcaption>
+    <div class="scene big" id="f-street"></div>
+    <ul class="legend" id="legend"></ul>
+  </figure>
+
+  <div class="totals" id="totals"></div>
+
+  <div class="grid">
+    <figure><figcaption><h2>Фасад 3–1, вход</h2><small>северная сторона, крыльцо</small></figcaption><div class="scene" id="f-north"></div></figure>
+    <figure><figcaption><h2>Фасад 1–3</h2><small>южная сторона, без плитки — её не видно</small></figcaption><div class="scene" id="f-south"></div></figure>
+    <figure><figcaption><h2>Фасад А–Г, терраса</h2><small>с добавленным вторым окном справа, размер принят как у соседнего</small></figcaption><div class="scene" id="f-east"></div></figure>
+  </div>
+
+  <section>
+    <h2>Ведомость отделки</h2>
+    <div class="tablewrap"><table><thead><tr><th>№</th><th>Элемент</th><th>Отделка</th><th>Цвет</th></tr></thead><tbody id="spec"></tbody></table></div>
+  </section>
+  <p class="note">Площади посчитаны по чертежам фасадов и плана, за вычетом окон и дверей. Высота фронтонов снята по масштабу, поэтому итог может отличаться на 3–5 м². Цвета плитки на экране приблизительные — сверяйте с образцами.</p>
+</div>
+
+<script>
+(function(){
+var TILES={
+  k1:{name:'Колорадо 1',note:'светло-серый',cols:['#9c9e9a','#8c8f8b','#a8aaa5','#81857f','#959892'],joint:'#3f4142'},
+  k4:{name:'Колорадо 4',note:'коричнево-рыжий',cols:['#7b5b3d','#8b6845','#6c5541','#95714b','#62574a','#80603f'],joint:'#2f2f30'},
+  k5:{name:'Колорадо 5',note:'тёмно-серый',cols:['#505551','#5e635e','#454a47','#6a6e68','#3d4240','#565b57'],joint:'#262829'}
+};
+var PLINTHS={
+  tile:{name:'Плитка Колорадо 5',finish:'Термопанель с клинкерной плиткой Керамин «Колорадо 5»',color:'тёмно-серый',sw:'#505551'},
+  anth:{name:'Антрацит',finish:'Штукатурка, окраска акриловой краской',color:'антрацит RAL 7024',sw:'#474a51'},
+  gran:{name:'Серый по проекту',finish:'Штукатурка, окраска акриловой краской',color:'Granit 30',sw:'#7b7c7e'}
+};
+var VARIANTS={acc:'Акценты на штукатурке',duo:'Две плитки',full:'Вся площадь'};
+var state={variant:'acc',tile:'k5',plinth:'tile'};
+var PLASTER='#eeeadf', ROOF='#474a51', ROOFD='#393c42', FRAME='#2f3237', DECK='#8f918d';
+var BASE=0.31, FLOOR=0.41, EAVE=3.272, RIDGE=6.107, GE=3.67, GA=5.83, K=0.476;
+function L(v){return v+FLOOR;}
+function n1(v){return Math.round(v*10)/10;}
+function rect(x,h0,w,hh,a){return '<rect x="'+n1(x*100)+'" y="'+n1(-(h0+hh)*100)+'" width="'+n1(w*100)+'" height="'+n1(hh*100)+'" '+(a||'')+'/>';}
+function pts(a){return a.map(function(p){return n1(p[0]*100)+','+n1(-p[1]*100);}).join(' ');}
+function poly(a,at){return '<polygon points="'+pts(a)+'" '+(at||'')+'/>';}
+function line(x1,h1,x2,h2,at){return '<line x1="'+n1(x1*100)+'" y1="'+n1(-h1*100)+'" x2="'+n1(x2*100)+'" y2="'+n1(-h2*100)+'" '+(at||'')+'/>';}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function brick(id,key){
+  var t=TILES[key],r=rng(key.charCodeAt(1)*97+7),s='<pattern id="'+id+'" width="204" height="105" patternUnits="userSpaceOnUse"><rect width="204" height="105" fill="'+t.joint+'"/>';
+  for(var row=0;row<14;row++){
+    var cs=[],ms=[];
+    for(var c=0;c<8;c++){cs.push(t.cols[Math.floor(r()*t.cols.length)]);ms.push([t.cols[Math.floor(r()*t.cols.length)],3+r()*8,6+r()*9]);}
+    var off=(row%2)?-12.75:0,y=row*7.5+0.5;
+    for(var c2=0;c2<9;c2++){
+      var x=off+c2*25.5+0.5,i=c2%8;
+      s+='<rect x="'+n1(x)+'" y="'+y+'" width="24.5" height="6.5" fill="'+cs[i]+'"/>';
+      s+='<rect x="'+n1(x+ms[i][1])+'" y="'+y+'" width="'+n1(ms[i][2])+'" height="6.5" fill="'+ms[i][0]+'" opacity=".45"/>';
+    }
+  }
+  return s+'</pattern>';
+}
+var F={
+  street:{id:'street',type:'gable',W:9.05,oL:1.25,oR:0.88,view:{x0:-3.2,x1:13.1,h1:7.5,below:1.15},
+    ops:[{x:3.35,w:1.2,b:L(0.4),t:L(2.4),n:2}],
+    zones:[{x0:2.725,x1:6.325}],vent:[4.92,6.79]},
+  north:{id:'north',type:'long',W:15.3,view:{x0:-4.7,x1:17.2,h1:7.1,below:0.5},
+    eaveAt:function(x){return x<9.45?3.12:EAVE;},
+    ops:[{x:1.5,w:2.1,b:L(0),t:L(2.4),n:2},{x:5.3,w:2.7,b:L(0),t:L(2.4),n:3,transom:L(2.1)},{x:9.2,w:0.8,b:L(0.8),t:L(2.666),n:1},{x:12.5,w:1.8,b:L(0),t:L(2.4),n:2}],
+    zones:[{x0:0,x1:10.3}],chim:4.96},
+  south:{id:'south',type:'long',W:15.3,view:{x0:-1.9,x1:20.0,h1:7.1,below:0.5},
+    ops:[{x:1.2,w:0.8,b:L(0.8),t:L(2.4),n:1},{x:3.7,w:1.6,b:L(0.8),t:L(2.4),n:2},{x:7.8,w:1.6,b:L(0.8),t:L(2.4),n:2},{x:10.5,w:0.8,b:L(0.8),t:L(2.4),n:1},{x:12.7,w:1.4,b:L(0.9),t:L(2.4),n:2}],
+    zones:[],noTile:true,chim:10.1},
+  east:{id:'east',type:'gable',W:9.05,oL:0.85,oR:1.34,view:{x0:-2.2,x1:11.9,h1:7.5,below:0.5},
+    ops:[{x:4.35,w:1.8,b:L(0),t:L(2.45),n:2},{x:6.7,w:1.8,b:L(0),t:L(2.45),n:2}],
+    zones:[{x0:0,x1:9.05,h1:2.81}],vent:[2.26,4.13]}
+};
+function topAt(f,x){
+  if(f.type==='gable')return GE+(GA-GE)*(1-Math.abs(x-f.W/2)/(f.W/2));
+  return f.eaveAt?f.eaveAt(x):EAVE;
+}
+function zoneArea(f,z){
+  var n=400,dx=(z.x1-z.x0)/n,a=0,h1=z.h1||99;
+  for(var i=0;i<n;i++){var x=z.x0+(i+.5)*dx;a+=Math.max(0,Math.min(h1,topAt(f,x))-BASE)*dx;}
+  f.ops.forEach(function(o){var c=o.x+o.w/2;if(c>z.x0&&c<z.x1)a-=o.w*Math.max(0,Math.min(o.t,h1)-o.b);});
+  return a;
+}
+function wallPts(f){
+  if(f.type==='gable')return [[0,BASE],[f.W,BASE],[f.W,GE],[f.W/2,GA],[0,GE]];
+  if(f.eaveAt)return [[0,BASE],[f.W,BASE],[f.W,EAVE],[9.45,EAVE],[9.45,3.12],[0,3.12]];
+  return [[0,BASE],[f.W,BASE],[f.W,EAVE],[0,EAVE]];
+}
+function win(o,id){
+  var fr=0.06,n=o.n,lw=(o.w-fr*(n+1))/n,top=o.transom||o.t,g='fill="url(#'+id+'-glass)"';
+  var s=rect(o.x-0.03,o.b-0.03,o.w+0.06,o.t-o.b+0.06,'fill="#000" opacity=".28"')+rect(o.x,o.b,o.w,o.t-o.b,'fill="'+FRAME+'"');
+  for(var i=0;i<n;i++)s+=rect(o.x+fr+i*(lw+fr),o.b+fr,lw,top-o.b-fr*(o.transom?1.5:2),g);
+  if(o.transom)s+=rect(o.x+fr,o.transom+fr/2,o.w-2*fr,o.t-o.transom-fr*1.5,g);
+  if(o.b>0.6)s+=rect(o.x-0.07,o.b-0.05,o.w+0.14,0.05,'fill="'+ROOFD+'"');
+  return s;
+}
+function tree(x,h,r){
+  return rect(x-0.07,0,0.14,h,'fill="#6b6a60" opacity=".7"')+
+   '<g fill="#8fa38a" opacity=".62"><circle cx="'+n1(x*100)+'" cy="'+n1(-h*100)+'" r="'+n1(r*100)+'"/><circle cx="'+n1((x-r*.7)*100)+'" cy="'+n1(-(h-r*.5)*100)+'" r="'+n1(r*70)+'"/><circle cx="'+n1((x+r*.75)*100)+'" cy="'+n1(-(h-r*.35)*100)+'" r="'+n1(r*75)+'"/></g>';
+}
+function shrub(x,r){return '<g fill="#6f8767"><ellipse cx="'+n1(x*100)+'" cy="'+n1(-r*70)+'" rx="'+n1(r*100)+'" ry="'+n1(r*75)+'"/><ellipse cx="'+n1((x+r*.9)*100)+'" cy="'+n1(-r*50)+'" rx="'+n1(r*70)+'" ry="'+n1(r*52)+'"/></g>';}
+function seams(x0,x1,hA,hB,step){var s='<g stroke="'+ROOFD+'" stroke-width="2.5">';for(var x=x0+step;x<x1-0.05;x+=step){s+=line(x,typeof hA==='function'?hA(x):hA,x,hB);}return s+'</g>';}
+function mark(x,h,n){return '<g><circle cx="'+n1(x*100)+'" cy="'+n1(-h*100)+'" r="19" fill="#fff" stroke="#1e2225" stroke-width="2.5"/><text x="'+n1(x*100)+'" y="'+n1(-h*100+8)+'" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="22" font-weight="500" fill="#1e2225">'+n+'</text></g>';}
+
+function draw(f){
+  var v=f.view,W=f.W,id=f.id,mode=state.variant,full=mode==='full',tileOn=!f.noTile;
+  var baseKey=state.tile==='k1'?'k5':'k1';
+  var wallFill='url(#'+id+'-wall)';
+  var plFill=state.plinth==='tile'?'url(#'+id+'-pl)':(state.plinth==='anth'?'#4a4d54':'#7b7c7e');
+  var s='<svg viewBox="'+n1(v.x0*100)+' '+n1(-v.h1*100)+' '+n1((v.x1-v.x0)*100)+' '+n1((v.h1+v.below)*100)+'" role="img" aria-label="Фасад дома">';
+  s+='<defs>'+brick(id+'-wall',state.tile)+brick(id+'-base',baseKey)+brick(id+'-pl','k5')+
+     '<linearGradient id="'+id+'-glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fb4c0"/><stop offset=".5" stop-color="#5d7180"/><stop offset="1" stop-color="#36434e"/></linearGradient>'+
+     '<linearGradient id="'+id+'-roof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#555961"/><stop offset="1" stop-color="#40434a"/></linearGradient>'+
+     '<clipPath id="'+id+'-clip"><polygon points="'+pts(wallPts(f))+'"/></clipPath></defs>';
+  s+=rect(v.x0,-v.below,v.x1-v.x0,v.h1+v.below,'fill="var(--sky)"');
+  s+=tree(v.x0+1.1,4.6,1.3)+(id==='street'?'':tree(v.x1-1.3,5.2,1.5));
+  if(f.vent){s+=rect(f.vent[0],4.4,f.vent[1]-f.vent[0],2.35,'fill="'+ROOF+'"')+seams(f.vent[0],f.vent[1],4.4,6.75,0.31)+rect(f.vent[0]-0.09,6.75,f.vent[1]-f.vent[0]+0.18,0.15,'fill="'+ROOFD+'"');}
+  // стены
+  s+=poly(wallPts(f),'fill="'+(!tileOn?PLASTER:full?wallFill:mode==='duo'?'url(#'+id+'-base)':PLASTER)+'"');
+  if(!full&&tileOn){f.zones.forEach(function(z){s+='<g clip-path="url(#'+id+'-clip)">'+rect(z.x0,BASE,z.x1-z.x0,(z.h1||7)-BASE,'fill="'+wallFill+'"')+'</g>';});}
+  // тень под свесом
+  if(f.type==='gable')s+=poly([[0,GE],[W/2,GA],[W,GE],[W,GE-0.32],[W/2,GA-0.32],[0,GE-0.32]],'fill="#000" opacity=".2"');
+  else if(f.eaveAt)s+=rect(0,3.12-0.3,9.45,0.3,'fill="#000" opacity=".22"')+rect(9.45,EAVE-0.28,W-9.45,0.28,'fill="#000" opacity=".2"');
+  else s+=rect(0,EAVE-0.28,W,0.28,'fill="#000" opacity=".2"');
+  // цоколь и отлив
+  s+=rect(-0.8,-0.05,W+1.6,0.05,'fill="#9c9e99"');
+  s+=rect(0,0,W,BASE,'fill="'+plFill+'"')+rect(-0.02,BASE-0.015,W+0.04,0.035,'fill="'+ROOFD+'"');
+  f.ops.forEach(function(o){s+=win(o,id);});
+  if(id==='street')s+='<circle cx="544" cy="-236" r="20" fill="#ffd98a" opacity=".5"/>'+rect(5.38,2.26,0.12,0.3,'fill="#1f2123"');
+  // кровля и пристройки
+  if(f.type==='gable'){
+    var xl=-f.oL,xr=W+f.oR,tl=RIDGE-K*(W/2+f.oL),tr=RIDGE-K*(W/2+f.oR);
+    s+=rect(-0.13,0.05,0.09,GE-0.5,'fill="'+ROOFD+'"')+rect(W+0.04,0.05,0.09,GE-0.5,'fill="'+ROOFD+'"');
+    s+=poly([[xl,tl],[W/2,RIDGE],[xr,tr],[xr,tr-0.28],[W/2,GA],[xl,tl-0.28]],'fill="'+ROOF+'"');
+    s+='<polyline points="'+pts([[xl,tl],[W/2,RIDGE],[xr,tr]])+'" fill="none" stroke="#6a6f78" stroke-width="3.5"/>';
+  }else{
+    var rp=f.eaveAt?[[-0.75,3.12],[9.45,3.12],[9.45,EAVE],[W+0.75,EAVE],[W+0.75,RIDGE],[-0.75,RIDGE]]:[[-0.75,EAVE],[W+0.75,EAVE],[W+0.75,RIDGE],[-0.75,RIDGE]];
+    var ev=function(x){return f.eaveAt?(x<9.45?3.12:EAVE):EAVE;};
+    if(f.chim)s+=rect(f.chim-0.25,5.2,0.5,1.35,'fill="'+ROOF+'"')+rect(f.chim-0.33,6.55,0.66,0.1,'fill="'+ROOFD+'"');
+    s+=poly(rp,'fill="url(#'+id+'-roof)"')+seams(-0.75,W+0.75,ev,RIDGE,0.52);
+    s+=rect(-0.75,RIDGE-0.06,W+1.5,0.08,'fill="'+ROOFD+'"');
+    if(f.eaveAt){s+=rect(-0.78,3.12-0.03,10.23,0.13,'fill="'+ROOFD+'"')+rect(9.45,EAVE-0.03,W+0.78-9.45,0.13,'fill="'+ROOFD+'"');
+      [[1.5,4.43],[2.85,4.43]].forEach(function(p){s+=rect(p[0],p[1],0.78,0.66,'fill="'+FRAME+'"')+rect(p[0]+0.06,p[1]+0.06,0.66,0.54,'fill="url(#'+id+'-glass)"');});}
+    else s+=rect(-0.78,EAVE-0.03,W+1.56,0.13,'fill="'+ROOFD+'"');
+    s+=rect(0.1,0.05,0.09,EAVE-0.1,'fill="'+ROOFD+'"')+rect(W-0.19,0.05,0.09,EAVE-0.1,'fill="'+ROOFD+'"');
+  }
+  if(id==='street'){
+    s+=rect(-1.5,0,1.5,0.36,'fill="'+DECK+'"')+rect(-1.85,0,0.35,0.18,'fill="'+DECK+'"');
+    s+=shrub(6.4,0.42)+shrub(7.6,0.34)+shrub(1.3,0.38);
+    // человек для масштаба
+    s+='<g fill="#2b2f33" opacity=".78"><circle cx="1050" cy="-163" r="11"/>'+rect(10.33,0.82,0.34,0.68,'rx="9"')+rect(10.36,0,0.12,0.86)+rect(10.52,0,0.12,0.86)+'</g>';
+    // размеры и отметки
+    s+='<g class="dimline">'+line(0,-0.62,W,-0.62)+line(0,-0.2,0,-0.75)+line(W,-0.2,W,-0.75)+line(-0.07,-0.69,0.07,-0.55)+line(W-0.07,-0.69,W+0.07,-0.55)+'</g>';
+    s+='<text class="dim" x="'+n1(W*50)+'" y="72" text-anchor="middle" dy="-18">9 050</text>';
+    [[RIDGE,'+5,697'],[EAVE,'+2,862'],[FLOOR,'±0,000'],[0,'−0,410']].forEach(function(m){
+      s+=line(11.05,m[0],12.85,m[0],'class="dimline"')+'<text class="dim" x="1285" y="'+n1(-m[0]*100-7)+'" text-anchor="end">'+m[1]+'</text>';});
+    s+=mark(full?1.5:3.95,full?2.0:3.6,1);
+    if(!full)s+=mark(1.5,2.0,2);
+    s+=mark(7.9,0.155,3)+mark(7.35,RIDGE-K*2.825-0.14,4)+mark(3.95,1.8,5)+mark(W+0.085,1.5,6);
+  }
+  if(id==='north'){
+    s+=poly([[0,3.2],[-3.45,2.95],[-3.45,2.83],[0,3.08]],'fill="'+ROOFD+'"');
+    [-2.82,-1.42].forEach(function(x){s+=rect(x-0.06,0.36,0.12,3.08+x*0.0725-0.36,'fill="#222426"');});
+    s+=rect(-3.1,0,11.85,0.36,'fill="'+DECK+'"')+rect(8.75,0,0.35,0.24,'fill="'+DECK+'"')+rect(9.1,0,0.35,0.12,'fill="'+DECK+'"');
+    s+=shrub(11.3,0.4)+shrub(15.9,0.45);
+  }
+  if(id==='south'){
+    s+=poly([[W,3.2],[W+3.7,2.93],[W+3.7,2.81],[W,3.08]],'fill="'+ROOFD+'"');
+    [W+1.49,W+2.85].forEach(function(x){s+=rect(x-0.06,0.36,0.12,3.08-(x-W)*0.073-0.36,'fill="#222426"');});
+    s+=rect(W,0,3.35,0.36,'fill="'+DECK+'"');
+    s+=shrub(6.3,0.42)+shrub(-0.9,0.45);
+  }
+  if(id==='east'){
+    s+=rect(2.74,2.81,6.86,0.655,'fill="'+ROOF+'"')+seams(2.74,9.6,2.95,3.465,0.5)+rect(2.74,2.81,6.86,0.14,'fill="'+ROOFD+'"');
+    [3.15,7.08,9.05].forEach(function(x){s+=rect(x-0.06,0.36,0.12,2.45,'fill="#222426"');});
+    s+=rect(3.07,0,6.53,0.36,'fill="'+DECK+'"')+rect(9.6,0,0.35,0.24,'fill="'+DECK+'"')+rect(9.95,0,0.35,0.12,'fill="'+DECK+'"');
+    s+=shrub(1.4,0.42);
+  }
+  s+=rect(v.x0,-v.below,v.x1-v.x0,v.below,'fill="var(--ground)"');
+  if(id==='street'){
+    s+='<g class="dimline">'+line(0,-0.62,W,-0.62)+line(0,-0.08,0,-0.75)+line(W,-0.08,W,-0.75)+line(-0.07,-0.69,0.07,-0.55)+line(W-0.07,-0.69,W+0.07,-0.55)+'</g>';
+    s+='<text class="dim" x="'+n1(W*50)+'" y="50" text-anchor="middle">9 050</text>';
+  }
+  s+='</svg>';
+  document.getElementById('f-'+id).innerHTML=s;
+}
+function seg(elId,key,opts){
+  var el=document.getElementById(elId);el.innerHTML='';
+  Object.keys(opts).forEach(function(k){
+    var b=document.createElement('button');b.type='button';b.id=elId+'-'+k;
+    b.setAttribute('aria-pressed',state[key]===k?'true':'false');
+    var o=opts[k];
+    if(o.sw){var i=document.createElement('span');i.className='sw';i.style.background=o.sw;b.appendChild(i);}
+    b.appendChild(document.createTextNode(o.name||o));
+    b.addEventListener('click',function(){state[key]=k;render();});
+    el.appendChild(b);
+  });
+}
+function fmt(v,d){return v.toLocaleString('ru-RU',{maximumFractionDigits:d||0,minimumFractionDigits:d||0});}
+function render(){
+  seg('seg-variant','variant',VARIANTS);
+  seg('seg-tile','tile',{k1:{name:'Колорадо 1',sw:'#9c9e9a'},k4:{name:'Колорадо 4',sw:'#8b6845'},k5:{name:'Колорадо 5',sw:'#505551'}});
+  seg('seg-plinth','plinth',PLINTHS);
+  Object.keys(F).forEach(function(k){draw(F[k]);});
+  var mode=state.variant,full=mode==='full',duo=mode==='duo',t=TILES[state.tile],bt=TILES[state.tile==='k1'?'k5':'k1'],p=PLINTHS[state.plinth],accA=0,fullA=0;
+  Object.keys(F).forEach(function(k){var f=F[k];if(f.noTile)return;fullA+=zoneArea(f,{x0:0,x1:f.W});f.zones.forEach(function(z){accA+=zoneArea(f,z);});});
+  var area=mode==='acc'?accA:fullA;
+  var withRes=area*1.08,panels=Math.ceil(withRes/0.5355),plArea=48.7*0.31;
+  document.getElementById('totals').innerHTML=
+    '<div><b>≈ '+fmt(area)+' м²</b><span>площадь термопанелей на стенах'+(duo?', из них акцентной плитки ≈ '+fmt(accA)+' м²':'')+'</span></div>'+
+    '<div><b>'+fmt(panels)+' шт.</b><span>панелей 1020×525 мм с запасом 8 %</span></div>'+
+    '<div><b>≈ '+fmt(panels*0.5355*80.77)+' BYN</b><span>панели, утеплитель XPS 50 мм, прайс от 07.09.2026</span></div>'+
+    '<div><b>≈ '+fmt(plArea)+' м²</b><span>цоколь, высота 0,31 м'+(state.plinth==='tile'?' — ещё '+Math.ceil(plArea*1.08/0.5355)+' панелей':'')+'</span></div>';
+  var where='С улицы — полоса шириной 3,6 м строго по оси конька, от цоколя до самого верха. У входа — вся стена под навесом крыльца. На террасе — пояс до верха окон по всей ширине, фронтон над навесом остаётся светлым. Южная сторона (фасад 1–3) без плитки: её не видно.';
+  document.getElementById('tip').innerHTML=full
+    ?'<b>Идея:</b> плитка «'+t.name+'» на трёх видимых сторонах дома — уличный торец, вход и терраса. Южная сторона (фасад 1–3) остаётся в штукатурке: её не видно.'
+    :duo?'<b>Идея:</b> стены в плитке «'+bt.name+'», поверх — акценты плиткой «'+t.name+'». '+where
+    :'<b>Идея:</b> плитка «'+t.name+'» на светлой штукатурке Palazzo 60. '+where;
+  var lg=[[1,(full?'Термопанель, плитка «':'Акцент: плитка «')+t.name+'»']];
+  if(!full)lg.push([2,duo?'Основная плитка «'+bt.name+'»':'Штукатурка Palazzo 60']);
+  lg.push([3,'Цоколь: '+{tile:'плитка «Колорадо 5»',anth:'штукатурка, антрацит',gran:'штукатурка, серый Granit 30'}[state.plinth]],[4,'Кровля и ветровая планка RAL 7024'],[5,'Окно ПВХ, антрацит'],[6,'Водосточная труба RAL 7024']);
+  document.getElementById('legend').innerHTML=lg.map(function(l){return '<li><i>'+l[0]+'</i>'+l[1]+'</li>';}).join('');
+  var rows=[];
+  var tp=function(x){return 'Термопанель с клинкерной плиткой Керамин «'+x.name+'», 245×65×7 мм, шов тёмно-серый';};
+  if(duo)rows.push(['Стены: уличный торец, вход, терраса (основная плоскость)',tp(bt),bt.note]);
+  rows.push([full?'Стены: уличный торец, вход, терраса, включая фронтоны':'Акценты: полоса по оси конька с улицы, стена под навесом крыльца, пояс до верха окон на террасе',tp(t),t.note]);
+  rows.push([mode==='acc'?'Остальные плоскости стен и южная сторона (фасад 1–3)':'Южная сторона (фасад 1–3)','Улучшенная штукатурка, окраска акриловой краской','Palazzo 60']);
+  rows.push(['Цоколь',p.finish,p.color]);
+  rows.push(['Отлив над цоколем','Металлический, окраска в заводских условиях','RAL 7024']);
+  rows.push(['Откосы окон и дверей','Откос Керамин 1200×250×28 мм','в цвет плитки']);
+  rows.push(['Кровля, ветровые планки, водосток','Фальцевая металлическая кровля','RAL 7024']);
+  rows.push(['Подшивка свесов','Металлический софит','RAL 7024']);
+  rows.push(['Окна и двери','ПВХ, окраска в заводских условиях','антрацит RAL 7024']);
+  rows.push(['Стойки террасы','Металлические, окраска','чёрный']);
+  rows.push(['Ступени и площадки входов','Песчано-цементная плитка по бетону','серый']);
+  document.getElementById('spec').innerHTML=rows.map(function(r,i){return '<tr><td>'+(i+1)+'</td><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>';}).join('');
+}
+render();
+// Версия для печати в PDF: открыть файл с ?print в адресе — три готовых сочетания подряд, без кнопок
+if(/print/.test(location.search)){
+  var presets=[
+    {variant:'acc',tile:'k5',plinth:'tile',title:'Вариант 1. Серые акценты «Колорадо 5» на светлой штукатурке'},
+    {variant:'duo',tile:'k5',plinth:'tile',title:'Вариант 2. Две плитки: светлая «Колорадо 1» и тёмная «Колорадо 5»'},
+    {variant:'full',tile:'k5',plinth:'anth',title:'Вариант 3. Вся площадь, плитка «Колорадо 5»'},
+    {variant:'acc',tile:'k4',plinth:'tile',title:'Вариант 4. Акценты «Колорадо 4» на светлой штукатурке'},
+    {variant:'full',tile:'k4',plinth:'tile',title:'Вариант 5. Вся площадь, плитка «Колорадо 4»'}
+  ];
+  var page=document.querySelector('.page'),out=document.createElement('div');
+  presets.forEach(function(p,i){
+    state.variant=p.variant;state.tile=p.tile;state.plinth=p.plinth;render();
+    var html=page.innerHTML.replace(/(street|north|south|east)-(wall|base|pl|glass|roof|clip)/g,'v'+i+'-$1-$2');
+    var d=document.createElement('div');d.className='page sheet';d.innerHTML=html;
+    d.querySelectorAll('[id]').forEach(function(e){if(e.id.charAt(0)!=='v')e.removeAttribute('id');});
+    d.querySelector('.controls').remove();
+    d.querySelector('h1').textContent=p.title;
+    out.appendChild(d);
+  });
+  page.remove();document.body.appendChild(out);document.documentElement.classList.add('print');
+}
+})();
+</script>
+<style>
+@page{size:A4 landscape;margin:9mm}
+.print body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.print .sheet{max-width:none;padding-block:0;gap:8px;break-after:page}
+.print .sheet .lead{display:none}
+.print .scene.big{max-width:880px}
+.print .totals{break-before:page}
+.print .grid{grid-template-columns:1.4fr 1.4fr 1fr;gap:14px}
+.print table{font-size:12px}
+.print th,.print td{padding:3px 10px 3px 0}
+.print .totals{padding:8px 0}
+.print .note{display:none}
+.print h1{font-size:23px}
+.print .tip{font-size:12px;max-width:none}
+.print .scene.big{max-width:800px}
+.print .legend{font-size:12px}
+.print .grid figcaption small{display:none}
+</style>
