@@ -103,6 +103,11 @@ td:first-child{font-family:var(--font-mono);color:var(--muted);width:34px}
   </section>
   <section class="outb">
     <h2 class="bighead">Баня с террасой</h2>
+    <div class="controls" aria-label="Отделка бани">
+      <div class="group"><span>Вариант</span><div class="seg" id="seg-bath-variant"></div></div>
+      <div class="group"><span>Плитка</span><div class="seg" id="seg-bath-tile"></div></div>
+      <div class="group"><span>Цоколь</span><div class="seg" id="seg-bath-plinth"></div></div>
+    </div>
     <p class="tip" id="tip-bath"></p>
     <div class="totals" id="tot-bath"></div>
     <div class="grid2">
@@ -116,6 +121,11 @@ td:first-child{font-family:var(--font-mono);color:var(--muted);width:34px}
 
   <section class="outb">
     <h2 class="bighead">Хозблок с навесом на 2 авто</h2>
+    <div class="controls" aria-label="Отделка хозблока">
+      <div class="group"><span>Вариант</span><div class="seg" id="seg-shed-variant"></div></div>
+      <div class="group"><span>Плитка</span><div class="seg" id="seg-shed-tile"></div></div>
+      <div class="group"><span>Цоколь</span><div class="seg" id="seg-shed-plinth"></div></div>
+    </div>
     <p class="tip" id="tip-shed"></p>
     <div class="totals" id="tot-shed"></div>
     <div class="grid2">
@@ -405,19 +415,19 @@ var OUTB=[
    post:function(){return shrub(5.3,0.35);}}
  ]}
 ];
-function drawB(c){
-  var v=c.view,id=c.id,mode=state.variant,full=mode==='full';
-  var baseKey=state.tile==='k1'?'k5':'k1',wallFill='url(#'+id+'-wall)';
-  var plFill=state.plinth==='tile'?'url(#'+id+'-pl)':(state.plinth==='anth'?'#4a4d54':'#7b7c7e');
+function drawB(c,st){
+  var v=c.view,id=c.id,mode=st.variant,full=mode==='full';
+  var baseKey=st.tile==='k1'?'k5':'k1',wallFill='url(#'+id+'-wall)';
+  var plFill=st.plinth==='tile'?'url(#'+id+'-pl)':(st.plinth==='anth'?'#4a4d54':'#7b7c7e');
   var s='<svg viewBox="'+n1(v.x0*100)+' '+n1(-v.h1*100)+' '+n1((v.x1-v.x0)*100)+' '+n1((v.h1+v.below)*100)+'" role="img" aria-label="Фасад">';
-  s+='<defs>'+brick(id+'-wall',state.tile)+brick(id+'-base',baseKey)+brick(id+'-pl','k5d')+
+  s+='<defs>'+brick(id+'-wall',st.tile)+brick(id+'-base',baseKey)+brick(id+'-pl','k5d')+
      '<linearGradient id="'+id+'-glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fb4c0"/><stop offset=".5" stop-color="#5d7180"/><stop offset="1" stop-color="#36434e"/></linearGradient>'+
      '<linearGradient id="'+id+'-roof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#555961"/><stop offset="1" stop-color="#40434a"/></linearGradient>'+
      '<clipPath id="'+id+'-clip">'+c.walls.map(function(w){return '<polygon points="'+pts(w.pts)+'"/>';}).join('')+'</clipPath></defs>';
   s+=rect(v.x0,-v.below,v.x1-v.x0,v.h1+v.below,'fill="var(--sky)"')+(v.h1>4?tree(v.x0+0.9,3.9,1.0)+tree(v.x1-1.0,4.3,1.15):tree(v.x0+0.7,2.4,0.7)+tree(v.x1-0.8,2.6,0.75));
   var baseFill=full?wallFill:(mode==='duo'?'url(#'+id+'-base)':PLASTER);
   c.walls.forEach(function(w){s+=poly(w.pts,'fill="'+baseFill+'"');});
-  if(!full){s+='<g clip-path="url(#'+id+'-clip)">';c.zones.forEach(function(z){s+=rect(z.x0,0,z.x1-z.x0,9,'fill="'+wallFill+'"');});s+='</g>';}
+  if(!full&&mode!=='none'){s+='<g clip-path="url(#'+id+'-clip)">';c.zones.forEach(function(z){s+=rect(z.x0,0,z.x1-z.x0,9,'fill="'+wallFill+'"');});s+='</g>';}
   c.plinth.forEach(function(p){s+=rect(p[0],0,p[1]-p[0],p[2],'fill="'+plFill+'"')+rect(p[0]-0.02,p[2]-0.015,p[1]-p[0]+0.04,0.035,'fill="'+ROOFD+'"');});
   c.ops.forEach(function(o){s+=o.kind==='door'?door(o):o.kind==='gate'?gate(o):win(o,id);});
   if(c.roof)s+=c.roof(id);
@@ -434,24 +444,43 @@ function areaB(c,full){
   });
   return a;
 }
+var OUT_VARIANTS={acc:'Акценты',none:'Без акцентов',duo:'Две плитки',full:'Вся площадь'};
+var TILE_OPTS={k1:{name:'Колорадо 1',sw:'#9c9e9a'},k4:{name:'Колорадо 4',sw:'#8b6845'},k5:{name:'Колорадо 5',sw:'#505551'}};
+OUTB.forEach(function(g){g.st={variant:'acc',tile:'k5',plinth:'tile'};});
+function seg2(elId,obj,key,opts){
+  var el=document.getElementById(elId);if(!el)return;el.innerHTML='';
+  Object.keys(opts).forEach(function(k){
+    var b=document.createElement('button');b.type='button';b.id=elId+'-'+k;
+    b.setAttribute('aria-pressed',obj[key]===k?'true':'false');
+    var o=opts[k];
+    if(o.sw){var i=document.createElement('span');i.className='sw';i.style.background=o.sw;b.appendChild(i);}
+    b.appendChild(document.createTextNode(o.name||o));
+    b.addEventListener('click',function(){obj[key]=k;renderOut();});
+    el.appendChild(b);
+  });
+}
 function renderOut(){
-  var mode=state.variant,t=TILES[state.tile],bt=TILES[state.tile==='k1'?'k5':'k1'];
   OUTB.forEach(function(g){
-    g.items.forEach(drawB);
+    var st=g.st,mode=st.variant,t=TILES[st.tile],bt=TILES[st.tile==='k1'?'k5':'k1'];
+    seg2('seg-'+g.key+'-variant',st,'variant',OUT_VARIANTS);
+    seg2('seg-'+g.key+'-tile',st,'tile',TILE_OPTS);
+    seg2('seg-'+g.key+'-plinth',st,'plinth',PLINTHS);
+    g.items.forEach(function(c){drawB(c,st);});
     var acc=0,all=0;g.items.forEach(function(c){acc+=areaB(c,false);all+=areaB(c,true);});
-    var area=mode==='acc'?acc:all,panels=Math.ceil(area*1.08/0.5355),plA=g.plinthLen*g.plinthH;
+    var area=mode==='acc'?acc:mode==='none'?0:all,panels=Math.ceil(area*1.08/0.5355),plA=g.plinthLen*g.plinthH;
+    g.tip=mode==='none'?'Стены в светлой штукатурке Palazzo 60 без плитки, тёмный цоколь и кровля RAL 7024 связывают постройку с домом. Самый недорогой вариант.':
+      (mode==='full'?'Все стены в плитке «'+t.name+'». ':mode==='duo'?'Стены в плитке «'+bt.name+'», акценты — плиткой «'+t.name+'»: ':'Плитка «'+t.name+'» на светлой штукатурке Palazzo 60: ')+
+      (mode==='full'?(g.key==='bath'?'Цоколь темнее стен, кровля RAL 7024 — баня читается как младший брат дома.':'Навес — стойки, укосины и кровля RAL 7024.'):g.accText);
     document.getElementById('tot-'+g.key).innerHTML=
       '<div><b>≈ '+fmt(area)+' м²</b><span>плитка на стенах'+(mode==='duo'?', из них акцентной ≈ '+fmt(acc)+' м²':'')+'</span></div>'+
       '<div><b>'+panels+' шт.</b><span>панелей с запасом 8 %</span></div>'+
       '<div><b>≈ '+fmt(panels*0.5355*80.77)+' BYN</b><span>панели, XPS 50 мм</span></div>'+
-      '<div><b>≈ '+fmt(plA,1)+' м²</b><span>цоколь'+(state.plinth==='tile'?' — ещё '+Math.ceil(plA*1.08/0.5355)+' панелей':'')+'</span></div>';
+      '<div><b>≈ '+fmt(plA,1)+' м²</b><span>цоколь'+(st.plinth==='tile'?' — ещё '+Math.ceil(plA*1.08/0.5355)+' панелей':'')+'</span></div>';
+    document.getElementById('tip-'+g.key).innerHTML='<b>Идея:</b> '+g.tip;
   });
-  var pre=mode==='full'?'Все стены в плитке «'+t.name+'». ':mode==='duo'?'Стены в плитке «'+bt.name+'», акценты — плиткой «'+t.name+'»: ':'Плитка «'+t.name+'» на светлой штукатурке Palazzo 60: ';
-  document.getElementById('tip-bath').innerHTML='<b>Идея:</b> '+pre+(mode==='full'?'Цоколь темнее стен, кровля RAL 7024 — баня читается как младший брат дома.':
-    'торец с террасой и входом — целиком, как тёмная «рамка» в глубине террасы; на длинном фасаде — вертикальная полоса через большое окно комнаты отдыха; на заднем — блок у двери кладовой; на глухом торце — полоса по оси конька, как на уличном фасаде дома. Цоколь темнее стен, кровля RAL 7024.');
-  document.getElementById('tip-shed').innerHTML='<b>Идея:</b> '+pre+(mode==='full'?'Навес — стойки, укосины и кровля RAL 7024.':
-    'фасад хозблока с воротами — целиком, на стене под навесом — блок вокруг двери и окна. Навес лёгкий: стойки, укосины и кровля RAL 7024, чтобы не спорить с домом.');
 }
+OUTB[0].accText='торец с террасой и входом — целиком, как тёмная «рамка» в глубине террасы; на длинном фасаде — вертикальная полоса через большое окно комнаты отдыха; на заднем — блок у двери кладовой; на глухом торце — полоса по оси конька, как на уличном фасаде дома. Цоколь темнее стен, кровля RAL 7024.';
+OUTB[1].accText='фасад хозблока с воротами — целиком, на стене под навесом — блок вокруг двери и окна. Навес лёгкий: стойки, укосины и кровля RAL 7024, чтобы не спорить с домом.';
 var _renderHouse=render;
 render=function(){_renderHouse();renderOut();};
 render();
@@ -467,11 +496,12 @@ if(/print/.test(location.search)){
   ];
   var page=document.querySelector('.page'),out=document.createElement('div');
   presets.forEach(function(p,i){
-    state.variant=p.variant;state.tile=p.tile;state.plinth=p.plinth;state.eastWin=p.eastWin;render();
+    state.variant=p.variant;state.tile=p.tile;state.plinth=p.plinth;state.eastWin=p.eastWin;
+    OUTB.forEach(function(g){g.st={variant:p.variant,tile:p.tile,plinth:p.plinth};});render();
     var html=page.innerHTML.replace(/(street|north|south|east|bw|bs|bn|be|hf|hs)-(wall|base|pl|glass|roof|clip)/g,'v'+i+'-$1-$2');
     var d=document.createElement('div');d.className='page sheet';d.innerHTML=html;
     d.querySelectorAll('[id]').forEach(function(e){if(e.id.charAt(0)!=='v')e.removeAttribute('id');});
-    d.querySelector('.controls').remove();
+    d.querySelectorAll('.controls').forEach(function(e){e.remove();});
     if(i!==0&&i!==2)d.querySelectorAll('.outb').forEach(function(e){e.remove();});
     d.querySelector('h1').textContent=p.title;
     out.appendChild(d);
